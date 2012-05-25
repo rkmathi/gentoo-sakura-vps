@@ -12,8 +12,8 @@ w
 EOM
 mkswap /dev/vda2
 sed -i \
-	-e "s:#/dev/vda2:/dev/vda2:" \
-	/etc/fstab
+    -e "s:#/dev/vda2:/dev/vda2:" \
+    /etc/fstab
 
 rm -f /kernel-version.txt
 

@@ -26,14 +26,14 @@ GENTOO_MIRROR=$(bash ${SCRIPTSDIR}/scripts/bootstrap-misc-mirror.sh)
 ## Configuring your network
 
 ifconfig eth0 $(cat ${BROOT}/netconfig/addr.txt) \
-	netmask $(cat ${BROOT}/netconfig/mask.txt) \
-	broadcast $(cat ${BROOT}/netconfig/bcast.txt) up
+    netmask $(cat ${BROOT}/netconfig/mask.txt) \
+    broadcast $(cat ${BROOT}/netconfig/bcast.txt) up
 
 route add default gw $(cat ${BROOT}/netconfig/gw.txt)
 
 for ip in $(cat ${BROOT}/netconfig/resolv.txt)
 do
-	echo "nameserver ${ip}" >> /etc/resolv.conf
+    echo "nameserver ${ip}" >> /etc/resolv.conf
 done
 
 ## Preparing the Disks
@@ -55,26 +55,32 @@ mount /dev/vda1 /mnt/gentoo/boot
 cd /mnt/gentoo
 
 wget $(wget -q -O - ${GENTOO_MIRROR}/releases/amd64/autobuilds/current-stage3/ | \
-	egrep -o "(https?|ftp)://[^\"]+/stage3[^.]+\.tar\.bz2" | head -n 1)
+    egrep -o "(https?|ftp)://[^\"]+/stage3[^.]+\.tar\.bz2" | head -n 1)
 tar xvjpf stage3-*.tar.bz2
 
 wget $(wget -q -O - ${GENTOO_MIRROR}/snapshots/ | \
-	egrep -o "(https?|ftp)://[^\"]+/portage-latest\.tar\.bz2" | head -n 1)
+    egrep -o "(https?|ftp)://[^\"]+/portage-latest\.tar\.bz2" | head -n 1)
 tar xvjf portage-latest.tar.bz2 -C /mnt/gentoo/usr
 
 cat > /mnt/gentoo/etc/make.conf <<EOM
-CHOST="x86_64-pc-linux-gnu"
-
-CFLAGS="-O3 -pipe -march=native -fomit-frame-pointer"
+# For Gentoo/Linux on Sakura VPS(v3) 2G
+CFLAGS="-march=nocona -O3 -pipe"
 CXXFLAGS="${CFLAGS}"
-MAKEOPTS="-j3"
-LINGUAS="ja"
-USE="logrotate cjk m17n-lib mmx nls sse sse2 ssse3 threads unicode
-     curl sqlite bash-completion python
-     -ipv6 -perl -cups -tcpd -X"
+CHOST="x86_64-pc-linux-gnu"
+MAKEOPTS="-j4"
 
-SYNC="rsync://rsync.gg3.net/gentoo-portage/"
-GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ "
+USE="-bluetooth -cups -gnome -gtk -ldap -kde -qt3 -qt4 -x264 \
+apache2 bzip2 cddb cgi cjk cvs crypt curl cxx dbus \
+fastcgi ftp gd gif gnutils gsl gzip iconv imagemagick imap \
+java javascript latex ldap mime mmx mysql \
+nas nls ocaml perl php png posix python raw readline \
+source sqlite sse sse2 ssl svg syslog udev unicode \
+vim-syntax xml zlib zsh-completion"
+
+LINGUAS="en"
+
+GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/"
+SYNC="rsync://rsync.jp.gentoo.org/gentoo-portage"
 EOM
 
 ## Installing the Gentoo Base System
