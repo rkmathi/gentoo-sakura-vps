@@ -1,7 +1,11 @@
 #!/bin/bash
 
 BROOT=${BROOT-/root}
+NETCONF=${BROOT}/netconfig
 SCRIPTSDIR=$(cd $(dirname $0); cd ../; pwd)
+
+## Restore root password
+sed -i -e "s|^root:[^:]\+:|root:$(cat ${BROOT}/shadow.txt)|" /etc/shadow
 
 ## Installing the Gentoo Base System
 
@@ -9,7 +13,7 @@ env-update
 source /etc/profile
 export PS1="(chroot) $PS1"
 
-emerge --sync --quiet
+emerge --sync
 
 sed -i \
     -e "s/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" \
@@ -22,52 +26,51 @@ locale-gen
 
 cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
-emerge gentoo-sources --quiet
-emerge gentoo-sources -p --quiet | \
+emerge gentoo-sources
+emerge gentoo-sources -p | \
     egrep -o "gentoo-sources-[r0-9.-]+" | egrep -o "[0-9][r0-9.-]+" > /kernel-version.txt
 
 cd /usr/src/linux
 cp $(find ${SCRIPTSDIR}/scripts/linux-config -type f | sort -nr | head -n 1) .config
 make oldconfig
-make && make modules_install
+make
+make modules_install
 cp arch/x86_64/boot/bzImage /boot/kernel-$(cat /kernel-version.txt)
 
 ## Configuring your System
 
 sed -i \
-	-e "s:/dev/BOOT:/dev/vda1:" \
-	-e "s:/dev/ROOT:/dev/vda3:" \
-	-e "s:ext2:ext4:" \
-	-e "s:ext3:ext4:" \
-	-e "s:/dev/SWAP:#/dev/vda2:" \
-	/etc/fstab
-
-ADDR=$(cat ${BROOT}/netconfig/addr.txt)
-MASK=$(cat ${BROOT}/netconfig/mask.txt)
-BCAST=$(cat ${BROOT}/netconfig/bcast.txt)
-GW=$(cat ${BROOT}/netconfig/gw.txt)
-RESOLV=$(cat ${BROOT}/netconfig/resolv.txt)
+    -e "s:/dev/BOOT:/dev/vda1:" \
+    -e "s:/dev/ROOT:/dev/vda3:" \
+    -e "s:ext2:ext4:" \
+    -e "s:ext3:ext4:" \
+    -e "s:/dev/SWAP:#/dev/vda2:" \
+    /etc/fstab
 
 cat >> /etc/conf.d/net <<EOM
-config_eth0="${ADDR} netmask ${MASK} broadcast ${BCAST}"
-routes_eth0="default via ${GW}"
-dns_servers_eth0="${RESOLV}"
+config_eth0="$(cat ${NETCONF}/addr.txt) netmask $(cat ${NETCONF}/mask.txt) broadcast $(cat ${NETCONF}/bcast.txt)"
+routes_eth0="default via $(cat ${NETCONF}/gw.txt)"
+dns_servers_eth0="$(cat ${NETCONF}/resolv.txt)"
 EOM
 
 (cd /etc/init.d && ln -s net.lo net.eth0)
 rc-update add net.eth0 default
 
+sed -i \
+    -e "s:keymap=\"us\":keymap=\"jp106\":" \
+    /etc/conf.d/keymaps
+
 ## Installing Necessary System Tools
 
 rc-update add sshd default
 
-emerge syslog-ng --quiet
+emerge syslog-ng
 rc-update add syslog-ng default
 
-emerge vixie-cron --quiet
+emerge vixie-cron
 rc-update add vixie-cron default
 
-emerge ntp --quiet
+emerge ntp
 sed -i \
     -s "s|^NTPCLIENT_OPTS=\"-s -b -u \\|NTPCLIENT_OPTS=\"-b ntp1.sakura.ad.jp\"|" \
     -s "s|\t0.gentoo.pool.ntp.org 1.gentoo.pool.ntp.org \\\n||" \
@@ -81,16 +84,16 @@ sed -i \
     /etc/ntp.conf
 cat >> /etc/ntp.conf <<EOM
 
-logfile	/var/log/ntpd.log
+logfile /var/log/ntpd.log
 EOM
 rc-update add ntp-client default
 rc-update add ntpd default
 
-emerge logrotate --quiet
+emerge logrotate
 
 ## Configuring the Bootloader
 
-emerge grub --quiet
+emerge grub
 
 cat > /boot/grub/menu.lst <<EOM
 default 0
@@ -105,7 +108,9 @@ EOM
 grep -v rootfs /proc/mounts > /etc/mtab
 grub-install --no-floppy /dev/vda
 
-# Post install
+## Post install
+
+rm -f /kernel-version.txt
 
 sed -i \
     -e "s|^c2:2345|#c2:2345|" \
@@ -115,32 +120,5 @@ sed -i \
     -e "s|^c6:2345|#c6:2345|" \
     -e "s|^#s0:12345:respawn:/sbin/agetty 9600 ttyS0 vt100|s0:2345:respawn:/sbin/agetty -h -L 115200 ttyS0 vt100|" \
     /etc/inittab
-
-if [ $# -gt 0 ]
-then
-    echo "root:$1" | chpasswd
-else
-    echo "Changing password for root"
-    passwd
-fi
-
-cat > /etc/init.d/gentoo-sakura-vps-finalize <<EOM
-#!/sbin/runscript
-
-depend() {
-    need localmount
-}
-
-start() {
-    rc-update del gentoo-sakura-vps-finalize default
-    rm -f /etc/init.d/gentoo-sakura-vps-finalize
-    if [[ -d ${BROOT}/gentoo-sakura-vps ]]
-    then
-    ${BROOT}/gentoo-sakura-vps/scripts/bootstrap-3-finalize.sh
-    fi
-}
-EOM
-chmod +x /etc/init.d/gentoo-sakura-vps-finalize
-rc-update add gentoo-sakura-vps-finalize default
 
 exit
