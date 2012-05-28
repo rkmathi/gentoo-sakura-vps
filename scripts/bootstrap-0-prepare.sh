@@ -14,7 +14,7 @@ t
 83
 w
 EOF
-mkfs.ext3 /dev/vda2
+mkfs.ext4 /dev/vda2
 mkdir -p ${BROOT}
 mount /dev/vda2 ${BROOT}
 
