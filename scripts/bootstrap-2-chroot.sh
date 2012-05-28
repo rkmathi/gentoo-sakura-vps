@@ -8,7 +8,6 @@ SCRIPTSDIR=$(cd $(dirname $0); cd ../; pwd)
 sed -i -e "s|^root:[^:]\+:|root:$(cat ${BROOT}/shadow.txt)|" /etc/shadow
 
 ## Installing the Gentoo Base System
-
 env-update
 source /etc/profile
 export PS1="(chroot) $PS1"
@@ -19,11 +18,9 @@ sed -i \
     -e "s/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" \
     -e "s/^#ja_JP.UTF-8 UTF-8/ja_JP.UTF-8 UTF-8/" \
     /etc/locale.gen
-
 locale-gen
 
 ## Configuring the Kernel
-
 cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
 emerge gentoo-sources
@@ -38,11 +35,9 @@ make modules_install
 cp arch/x86_64/boot/bzImage /boot/kernel-$(cat /kernel-version.txt)
 
 ## Configuring your System
-
 sed -i \
     -e "s:/dev/BOOT:/dev/vda1:" \
     -e "s:/dev/ROOT:/dev/vda3:" \
-    -e "s:ext2:ext4:" \
     -e "s:ext3:ext4:" \
     -e "s:/dev/SWAP:#/dev/vda2:" \
     /etc/fstab
@@ -61,7 +56,6 @@ sed -i \
     /etc/conf.d/keymaps
 
 ## Installing Necessary System Tools
-
 rc-update add sshd default
 
 emerge syslog-ng
@@ -92,7 +86,6 @@ rc-update add ntpd default
 emerge logrotate
 
 ## Configuring the Bootloader
-
 emerge grub
 
 cat > /boot/grub/menu.lst <<EOM
@@ -100,7 +93,7 @@ default 0
 timeout 3
 serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
 terminal --timeout=10 serial console
-title=Gentoo
+title=Gentoo Linux
     root (hd0,0)
     kernel /boot/kernel-$(cat /kernel-version.txt) root=/dev/vda3 console=tty0 console=ttyS0,115200n8r
 EOM
@@ -109,7 +102,6 @@ grep -v rootfs /proc/mounts > /etc/mtab
 grub-install --no-floppy /dev/vda
 
 ## Post install
-
 rm -f /kernel-version.txt
 
 sed -i \

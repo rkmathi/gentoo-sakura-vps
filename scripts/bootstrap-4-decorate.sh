@@ -1,6 +1,6 @@
 #!/bin/bash
 
-emerge --update --deep world --quiet
+emerge --update --deep --newuse --quiet --with-bdeps=y @world
 
 emerge sudo --quiet
 sed -i \
