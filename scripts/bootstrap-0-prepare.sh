@@ -8,13 +8,8 @@ cd /root
 
 # Use swap partition as a temporary storage
 swapoff /dev/vda2
-fdisk /dev/vda <<EOF
-t
-2
-83
-w
-EOF
-mkfs.ext4 /dev/vda2
+parted -s /dev/vda mkfs 2 ext2
+mkfs.ext3 /dev/vda2
 mkdir -p ${BROOT}
 mount /dev/vda2 ${BROOT}
 
@@ -65,7 +60,10 @@ rm -f /root/install-*.iso
 rm -rf ${D}
 
 # Grub configuration
-sed -i -e "s:^hiddenmenu::" /boot/grub/grub.conf
+sed -i \
+    -e "s:^default[= ]0:default $(cat /boot/grub/grub.conf | grep "^title" | wc -l ):" \
+    -e "s:^hiddenmenu::" \
+    /boot/grub/grub.conf
 cat >> /boot/grub/grub.conf <<EOM
 
 title Gentoo install
