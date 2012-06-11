@@ -23,7 +23,7 @@ locale-gen
 ## Configuring the Kernel
 cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
-emerge gentoo-sources
+emerge -q '=sys-kernel/gentoo-sources-3.2.12'
 emerge gentoo-sources -p | \
     egrep -o "gentoo-sources-[r0-9.-]+" | egrep -o "[0-9][r0-9.-]+" > /kernel-version.txt
 
@@ -58,13 +58,13 @@ sed -i \
 ## Installing Necessary System Tools
 rc-update add sshd default
 
-emerge syslog-ng
+emerge -q -j2 syslog-ng
 rc-update add syslog-ng default
 
-emerge vixie-cron
+emerge -q -j2 vixie-cron
 rc-update add vixie-cron default
 
-emerge ntp
+emerge -q -j2 ntp
 sed -i \
     -s "s|^NTPCLIENT_OPTS=\"-s -b -u \\|NTPCLIENT_OPTS=\"-b ntp1.sakura.ad.jp\"|" \
     -s "s|\t0.gentoo.pool.ntp.org 1.gentoo.pool.ntp.org \\\n||" \
@@ -83,10 +83,8 @@ EOM
 rc-update add ntp-client default
 rc-update add ntpd default
 
-emerge logrotate
-
 ## Configuring the Bootloader
-emerge grub
+emerge -q grub
 
 cat > /boot/grub/menu.lst <<EOM
 default 0
