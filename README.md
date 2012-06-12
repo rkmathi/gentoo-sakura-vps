@@ -1,8 +1,8 @@
- Gentoo Linux インストールスクリプト (さくらVPS v3)
+# Gentoo Linux インストールスクリプト (さくらVPS v3)
 
 ## 使い方
 
-https://github.com/kiyoya/gentoo-sakura-vpsのほぼ丸パク(ry...Forkです。
+https://github.com/kiyoya/gentoo-sakura-vps のほぼ丸パク(ry...Forkです。
 
 ### OS再インストール
 
