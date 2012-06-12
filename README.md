@@ -31,5 +31,6 @@ Gentooが起動したら、
 
     cd /root/gentoo-sakura-vps
     ./scripts/bootstrap-3-finalize.sh
+    reboot
 
 ヾ(＠⌒ー⌒＠)ノ
