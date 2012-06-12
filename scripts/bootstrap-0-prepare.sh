@@ -31,19 +31,26 @@ D=${BROOT}/squashfs-root
 mkdir -p initrd
 cd initrd
 zcat ../isolinux/gentoo.igz | cpio -i
-cp ${D}/lib/modules/*-gentoo*/kernel/drivers/block/virtio_blk.ko ./lib/modules/*-gentoo*/kernel/drivers/block/
-cp -r ${D}/lib/modules/*-gentoo*/kernel/drivers/virtio ./lib/modules/*-gentoo*/kernel/drivers/
+cp ${D}/lib/modules/*-gentoo*/kernel/drivers/block/virtio_blk.ko \
+    ./lib/modules/*-gentoo*/kernel/drivers/block/
+cp -r ${D}/lib/modules/*-gentoo*/kernel/drivers/virtio \
+    ./lib/modules/*-gentoo*/kernel/drivers/
 find . | sort | cpio -H newc -o | gzip > ../isolinux/gentoo.igz
 
 # Backup root password
-cat /etc/shadow | egrep -m 1 -o "^root:([^:]+)" | sed -e "s|^root:||" > ${D}/root/shadow.txt
+cat /etc/shadow | egrep -m 1 -o "^root:([^:]+)" | \
+    sed -e "s|^root:||" > ${D}/root/shadow.txt
 
 # Backup network configuration
 mkdir -p ${D}/root/netconfig
-ifconfig eth0 | egrep -o "inet addr:[0-9.]+" | egrep -o "[0-9.]+" > ${D}/root/netconfig/addr.txt
-ifconfig eth0 | egrep -o "Bcast:[0-9.]+" | egrep -o "[0-9.]+" > ${D}/root/netconfig/bcast.txt
-ifconfig eth0 | egrep -o "Mask:[0-9.]+" | egrep -o "[0-9.]+" > ${D}/root/netconfig/mask.txt
-route | egrep -o "default +[0-9.]+" | egrep -o "[0-9.]+" > ${D}/root/netconfig/gw.txt
+ifconfig eth0 | egrep -o "inet addr:[0-9.]+" | egrep -o "[0-9.]+" > \
+    ${D}/root/netconfig/addr.txt
+ifconfig eth0 | egrep -o "Bcast:[0-9.]+" | egrep -o "[0-9.]+" > \
+    ${D}/root/netconfig/bcast.txt
+ifconfig eth0 | egrep -o "Mask:[0-9.]+" | egrep -o "[0-9.]+" > \
+    ${D}/root/netconfig/mask.txt
+route | egrep -o "default +[0-9.]+" | egrep -o "[0-9.]+" > \
+    ${D}/root/netconfig/gw.txt
 cat /etc/resolv.conf | egrep -o 'nameserver +[0-9.]+' | egrep -o '[0-9.]+' | \
     perl -pe 's/\n/ /g' > ${D}/root/netconfig/resolv.txt
 
