@@ -50,15 +50,15 @@ rc-update add net.eth0 default
 emerge -q -j2 syslog-ng vixie-cron eix logrotate ntp "=sys-block/parted-2.3*" \
     ethtool grub
 sed -i \
-    -s "s|^NTPCLIENT_OPTS=\"-s -b -u \\|NTPCLIENT_OPTS=\"-b ntp1.sakura.ad.jp\"|" \
-    -s "s|\t0.gentoo.pool.ntp.org 1.gentoo.pool.ntp.org \\\n||" \
-    -s "s|\t2.gentoo.pool.ntp.org 3.gentoo.pool.ntp.org\"\n||" \
+    -s 's|^NTPCLIENT_OPTS=\"-s -b -u \\|NTPCLIENT_OPTS=\"-b ntp1.sakura.ad.jp\"|' \
+    -s 's|\t0.gentoo.pool.ntp.org 1.gentoo.pool.ntp.org \\||' \
+    -s 's|\t2.gentoo.pool.ntp.org 3.gentoo.pool.ntp.org\"||'\
     /etc/conf.d/ntp-client
 sed -i \
-    -s "s|^server 0.gentoo.pool.ntp.org\n|server ntp1.sakura.ad.jp|" \
-    -s "s|^server 1.gentoo.pool.ntp.org\n||" \
-    -s "s|^server 2.gentoo.pool.ntp.org\n||" \
-    -s "s|^server 3.gentoo.pool.ntp.org\n||" \
+    -s 's|^server 0.gentoo.pool.ntp.org|server ntp1.sakura.ad.jp|' \
+    -s 's|^server 1.gentoo.pool.ntp.org||' \
+    -s 's|^server 2.gentoo.pool.ntp.org||' \
+    -s 's|^server 3.gentoo.pool.ntp.org||' \
     /etc/ntp.conf
 cat >> /etc/ntp.conf <<EOM
 
@@ -97,7 +97,7 @@ sed -i \
     -e "s|^c4:2345|#c4:2345|" \
     -e "s|^c5:2345|#c5:2345|" \
     -e "s|^c6:2345|#c6:2345|" \
-    -e "s|^#s0:12345:respawn:/sbin/agetty (9600|115200) ttyS0 vt100|s0:2345:respawn:/sbin/agetty -h 115200 ttyS0 vt100|" \
+    -e 's_^#s0:12345:respawn:/sbin/agetty 115200 ttyS0 vt100_s0:12345:respawn:/sbin/agetty -h 115200 ttyS0 vt100_g' \
     /etc/inittab
 
 exit
