@@ -47,13 +47,8 @@ EOM
 rc-update add net.eth0 default
 
 # Installing Necessary System Tools
-emerge -q -j2 syslog-ng
-emerge -q -j2 eix
-emerge -q -j2 vixie-cron
-emerge -q -j2 logrotate
-emerge -q -j2 ntp
-emerge -q -j2 "=sys-block/parted-2.3*"
-emerge -q -j2 ethtool
+emerge -q -j2 syslog-ng vixie-cron eix logrotate ntp "=sys-block/parted-2.3*" \
+    ethtool grub
 sed -i \
     -s "s|^NTPCLIENT_OPTS=\"-s -b -u \\|NTPCLIENT_OPTS=\"-b ntp1.sakura.ad.jp\"|" \
     -s "s|\t0.gentoo.pool.ntp.org 1.gentoo.pool.ntp.org \\\n||" \
@@ -79,7 +74,6 @@ ACTION=="add", SUBSYSTEM=="net", KERNEL=="eth0", RUN+="/sbin/ethtool -K eth0 tso
 EOM
 
 # Configuring the Bootloader
-emerge -q -j2 grub
 cat > /boot/grub/menu.lst <<EOM
 default 0
 timeout 3
