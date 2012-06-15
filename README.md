@@ -3,6 +3,8 @@
 ## 使い方
 
 https://github.com/kiyoya/gentoo-sakura-vps のほぼ丸パク(ry...Forkです。
+tag "kernel-3.2.12"なら一応動くはず...
+
 
 ### OS再インストール
 
