@@ -16,7 +16,7 @@ locale-gen
 
 # Configuring the Kernel (gentoo-sources-3.2.12)
 cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-emerge -q '=sys-kernel/gentoo-sources-3.4.9'
+emerge -q '=sys-kernel/gentoo-sources-3.5.7'
 emerge gentoo-sources -p | \
     egrep -o "gentoo-sources-[r0-9.-]+" | egrep -o "[0-9][r0-9.-]+" > \
     /kernel-version.txt

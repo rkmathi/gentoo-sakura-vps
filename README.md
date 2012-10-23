@@ -2,9 +2,9 @@
 
 ## 使い方
 
-https://github.com/kiyoya/gentoo-sakura-vpsのとおりです。
+https://github.com/kiyoya/gentoo-sakura-vps のとおりです。
 
-#### tag "kernel-3.4.9"が最新です。
+#### tag "kernel-3.5.7"が最新です。
 
 
 ### OS再インストール
