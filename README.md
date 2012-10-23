@@ -2,9 +2,9 @@
 
 ## 使い方
 
-https://github.com/kiyoya/gentoo-sakura-vps のほぼ丸パク(ry...Forkです。
+https://github.com/kiyoya/gentoo-sakura-vpsのとおりです。
 
-tag "kernel-3.2.12"ならおそらく動くはず...
+#### tag "kernel-3.4.9"が最新です。
 
 
 ### OS再インストール
