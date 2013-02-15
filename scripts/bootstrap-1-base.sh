@@ -18,7 +18,7 @@ done
 mkfs.ext4 /dev/vda3
 mount /dev/vda3 /mnt/gentoo
 mkdir -p /mnt/gentoo/boot
-mke2fs /dev/vda1
+mkfs.ext4 /dev/vda1
 mount /dev/vda1 /mnt/gentoo/boot
 
 # Installing the Gentoo Installation Files
